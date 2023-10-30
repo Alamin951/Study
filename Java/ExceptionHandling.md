@@ -1,16 +1,16 @@
 # GlobalExceptionHandler
-	create a class and with @ControllerAdvice anotation 
-	
-	Exception Handler:
-	The @ExceptionHandler is an annotation used to handle the specific exceptions and sending the custom responses to the client
+create a class and with @ControllerAdvice annotation 
+
+Exception Handler:
+The @ExceptionHandler is an annotation used to handle the specific exceptions and sending the custom responses to the client
 	
 Any class annotated with @ControllerAdvice will become a controller-advice class which will be responsible for handling exceptions. Under 
 this class we make use of annotations provided as @ExceptionHandler, @ModelAttribute, @InitBinder.
 
-ResponseEntityExceptionHandler is a convenient base class for @ControllerAdvice classes that wish to provide centralised exception handling 
+ResponseEntityExceptionHandler is a convenient base class for @ControllerAdvice classes that wish to provide centralized exception handling 
 across all @RequestMapping methods through @ExceptionHandler methods.
 
-ResponseEntityExceptionHandler is a convenient base class for @ControllerAdvice classes that wish to provide centralised exception handling 
+ResponseEntityExceptionHandler is a convenient base class for @ControllerAdvice classes that wish to provide centralized exception handling 
 across all @RequestMapping methods through @ExceptionHandler methods. It provides methods for handling internal Spring MVC exceptions. It 
 returns a ResponseEntity in contrast to DefaultHandlerExceptionResolver which returns a ModelAndView
 
@@ -30,7 +30,7 @@ By default @ControllerAdvice will scan and handle all the classes in your applic
 	eg. @ControllerAdvice(assignableTypes = {ControllerInterface.class, AbstractController.class})
 
 
-# Basic structure
+## Basic structure
 	@ControllerAdvice
 	public class GlobalExceptionHandler {
 		@ExceptionHandler({myExceptionClass.class})

@@ -1,22 +1,22 @@
 
-Dispatcher Servlet is the entry point for all the incomming request.
+Dispatcher Servlet is the entry point for all the incoming request.
 
-tomcat -> Filter -> Interceotor -> Controller -> ......
+tomcat -> Filter -> Interceptor -> Controller -> ......
 
 
-In Spring boot application we have 2 options eighter we use filter or Interceptor.
+In Spring boot application we have 2 options either we use filter or Interceptor.
 
 	Before writing an Interceptor class we need to register the interceptor class to the WebConfig. 
 
 	On the webConfig we need to  override the addInterceptors for register.
 
 On  webConfig addInterceptors we can also assign the pathPatterns
-	resistry.addInterceptors(...).addPathPatterns("") -> specify any url.
+	registry.addInterceptors(...).addPathPatterns("") -> specify any url.
 
 Spring Interceptor is similar to a Filter, which is used to intercept the request and process them. Spring MVC allows you to intercept web requests for pre-handling 
 and post-handling through Handler Interceptors.
 
--> Spring Interceptor works like the filter which intercepts the request and process them.
+- Spring Interceptor works like the filter which intercepts the request and process them.
 	
 	1. preHandle(): The preHandle() method will be called before the actual handler is executed. This method returns a boolean value which can be used to continue or break the control flowing to the DispatcherServlet.
 		
@@ -52,6 +52,6 @@ and post-handling through Handler Interceptors.
 	}
 	
 ### Ref link:
-	https://www.youtube.com/watch?v=DuMf8Nwb-9w
-	https://medium.com/@aedemirsen/what-is-spring-boot-request-interceptor-and-how-to-use-it-7fd85f3df7f7
+https://www.youtube.com/watch?v=DuMf8Nwb-9w
+https://medium.com/@aedemirsen/what-is-spring-boot-request-interceptor-and-how-to-use-it-7fd85f3df7f7
 	
