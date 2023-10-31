@@ -370,5 +370,150 @@ and Socket.getOutputStream() methods.
 	
 ### Future object
  In java when we move to another thread  and the previous thread is executing some task now if we want to keep a track or track its progress then we can use future object to let us know when its done
- 	
+
+
+
+## String
+In Java after creating a String it can not be modified. If tried to modify then it will create a instance of that. All declared are final.
+
+Java provides two options: **StringBuffer**
+and **StringBuilder**. Both hold strings that can be modified after they are created.
+
+The strings within objects of type String are unchangeable means
+that the contents of the String instance cannot be changed after it has been created. However,
+a variable declared as a String reference can be changed to point at some other String object
+at any time.
 	
+### StringBuffer
+StringBuffer is a peer class of String that provides much of the functionality of strings. 
+String represents fixed-length, immutable character sequences but StringBuffer represents growable and writable characters sequences. 
+
+### StringBuilder
+Same as StringBuffer butOne major difference is that it's not synchronized means it's not thread safe. Th
+
+### When a primitive type is passed to a method, it is done by use of call-by-value. Objects are implicitly passed by use of call-by-reference.
+
+
+## Static
+Method declared as *static* have several restrictions:
+- They can only call other static methods.
+- They must only access static data
+- They can not refer to ***this*** or ***super*** in any way.
+~~~
+// Demonstrate static variables, methods, and blocks.
+class UseStatic {
+	static int a = 3;
+	static int b;
+	static void meth(int x) {
+		System.out.println("x = " + x);
+		System.out.println("a = " + a);
+		System.out.println("b = " + b);
+	}
+	static {
+		System.out.println("Static block initialized.");
+		b = a * 4;
+	}
+	public static void main(String args[]) {
+		meth(42);
+	}
+}
+
+Output:
+	Static block initialized.
+	x = 42
+	a = 3
+	b = 12
+~~~
+
+## Final
+By declaring a variable using final we can prevent its contents from being modified. We must initialize a final variable when its been declared.
+
+Its a common coding convention to use all uppercase letter when declaring a final variables. 
+
+
+## Nested and Inner Classes
+In Java we can declare a class within another class. The scope of the nested class is bounded by the scope of its enclosing class. **A nested class has access
+to the members, including private members, of the class in which it is nested. But the enclosing class does not have the access of the nested classes private members**.
+
+There are 2 types of nested class:
+- *static* -> static nested classes are seldom used
+- *non-static* -> also called as *inner* class
+
+### Anonymous Inner Class
+Anonymous Inner class is an inner class without a name and for which only a single object is created. 
+**Anonymous inner classes are useful in writing implementation classes for listener interfaces in graphics programming**
+
+Syntax:
+~~~
+// Test can be interface,abstract/concrete class
+Test t = new Test() 
+{
+   // data members and methods
+   public void test_method() 
+   {
+      ........
+      ........
+    }   
+};
+~~~
+
+Difference between a normal class and anonymous class:
+- A normal class can implement any number of interfaces but the anonymous inner class can implement only one interface at a time.
+- Normal class can extends One class and implements any number of Interfaces but anonymous class can extends one class or implements only one interface at a time.
+- In anonymous class we can not write any constructor as there is no name of the class.
+
+#### Access
+- An anonymous class has access to the members of its enclosing class.
+- Anonymous class can not access local variable in its enclosing scope that are not declared as final or effectively final.
+- Like a nested inner class, declaration of a type in anonymous class shadows any other declaration in the enclosing scope that have the same name
+
+We can declare the following in anonymous classes as follows:
+- Fields
+- Extra methods (even if they do not implement any methods of the supertype)
+- Instance initializers
+- Local classes
+
+~~~
+// Java Program to Demonstrate Anonymous inner class 
+
+// Interface 
+interface Age { 
+	int x = 21; 
+	void getAge(); 
+} 
+
+// Main class 
+class AnonymousDemo { 
+	
+	// Main driver method 
+	public static void main(String[] args) 
+	{ 
+
+		// MyClass is hidden inner class of Age interface 
+		// whose name is not written but an object to it 
+		// is created. 
+		Age oj1 = new Age() { 
+			
+			@Override public void getAge() 
+			{ 
+				// printing age 
+				System.out.print("Age is " + x); 
+			} 
+		}; 
+		
+		oj1.getAge(); 
+	} 
+}
+~~~
+
+## VarArgs (Variable-Length Arguments)
+VarArgs is the creation of methods that need to take a variable number of arguments.
+
+	Int ... v to declare a variable length arguments.
+ 
+A VarArgs method can also be overloaded by a non-VarArgs method. For example, vaTest(int x)
+is a valid overload of vaTest( ) in the foregoing program. This version is invoked only when one
+int argument is present. When two or more int arguments are passed, the VarArgs version
+vaTest(int…v) is used.
+
+
