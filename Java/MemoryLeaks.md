@@ -69,3 +69,77 @@ For this small ignorance equals object can pile up and can lead to performance i
 #### Prevent
 - As a rule of thumb, when defining new entities, always override the equals() and hashCode() methods.
 - It’s not enough to just override, these methods must be overridden in an optimal way as well.
+
+### Inline Classes That Reference Outer Classes
+When we declare a non static inner class and the Class contains a bulky object then if we declare inner class object then it holds a lot of memory.
+#### Prevent
+ - Migrating to latest version of Java. ZGC uses root references to find unreachable objects.
+ - If possible make inner class static
+
+### Through *finalize()* methods
+Whenever we override *finalize()* method then the objects of that class are not instantly garbage collected. If there is a problem on method or isn't optimize then sooner or later there is a chance of *OutOfMemoryError*.
+
+#### Prevent
+ - Always try to avoid finalize method
+
+### Interned String
+Java String pool went through major changes on java 7. On codes java 6 or below we need to be more attentive when working with large string. **If we read a massive String object, and call intern() on that object, it goes to the string pool, which is located in PermGen (permanent memory), and will stay there as long as our application runs.**
+
+#### Prevent
+- The simplest way to resolve this issue is by upgrading to the latest Java version, as String pool moved to HeapSpace starting with Java version 7.
+- If we’re working on large Strings, we can increase the size of the PermGen space to avoid any potential OutOfMemoryErrors:
+
+### Using ThreadLocals
+When using this construct, each thread will hold an implicit reference to its copy of a ThreadLocal variable and will maintain its own copy, instead of sharing the resource across multiple threads, as long as the thread is alive.
+
+Despite its advantages, the use of ThreadLocal variables is controversial, as they’re infamous for introducing memory leaks if not used properly. Joshua Bloch once commented on thread local usage that:
+~~~
+“Sloppy use of thread pools in combination with sloppy use of thread locals can cause unintended object retention, as has been noted in many places. But placing the blame on thread locals is unwarranted.”
+~~~
+
+Since Thread Pools in application servers work on the concept of thread reuse, they’re never garbage collected; instead, they’re reused to serve another request.
+If any class creates a ThreadLocal variable, but doesn’t explicitly remove it, then a copy of that object will remain with the worker Thread even after the web application is stopped, thus preventing the object from being garbage collected.
+
+#### Prevent
+- Clean-up ThreadLocals when we're no longer using them. It has remove() method
+- Don’t use **ThreadLocal.set(null)** to clear the value. It doesn’t actually clear the value, but will instead look up the Map associated with the current thread and set the key-value pair as the current thread and null, respectively.
+- Its better to close ThreadLocals on finally block.
+
+### Other Strategies for Dealing With Memory Leaks
+####  Enable Profiling
+Using profilers, we can compare different approaches and find areas where we can optimally use our resources.
+
+#### Verbose Garbage Collection
+ By enabling this we can track the detailed trace of the GC. To enable this:
+
+    -verbose:gc
+
+![Verbose Garbage Collector](../images/verbose-garbage-collection.jpg)
+
+
+
+
+
+
+<br><br><br>
+ ## ZGC ( Z Garbage Collector )
+
+ ZGC manages to keep low pause times on even multi-terabyte heaps
+
+ As OS dynamically allocate memory spaces and when we remove a object of bulk of the data the memory space in between remains free as long we don't allocate another object of that free space. To allocate we need to calculate or scan through memory to check whether the object will hold on that space or not. It's very expensive. To solve this we use the memory as a block and we know which block is free or not and place object there. 
+
+ But in Java we don't have to allocate or free the spaces. The GC handles these for us. It looks for the objects that we can not reach through our applications then frees up the spaces. 
+
+ ### GC Phase Properties
+ **Properties:**
+ - **Parallel** phase run on multiple GC threads.
+ - **Serial** phase runs on a single thread
+ - **Stop-the-word** phase can't run concurrently with application code.
+- **Concurrent** phase can rin in the background while our application works
+- **Incremental** phase can terminate before finishing all of its work and continue it later
+
+***ZGC*** uses a different approach , **It stores the reference state as the bits of the reference**
+<br>
+ZGC has a phase making, here we find all the reachable objects. ZGC intends to provide stop-the-world phases as short as possible. It achieves it in such a way that the duration of these pause times doesn’t increase with the heap size. These characteristics make ZGC a good fit for server applications, where large heaps are common, and fast application response times are a requirement. **Since ZGC doesn’t want long pause times, it does most of the relocating in parallel with the application.** 
+
+Load barriers fix the references pointing to relocated objects with a technique called remapping. starting JDK 16, ZGC got support for in-place relocation
