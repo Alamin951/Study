@@ -14,6 +14,10 @@ Spring WebFlux provides a choice of two programming models:
 
 ## Applicability
 
-Spring MVC and Spring WebFlux works together to expand the available options.  
+Spring MVC and Spring WebFlux works together to expand the available options. Designed for continuity and consistency with each other. 
 
 ![MVC-VS-WebFlux](../images/spring-mvc-and-webflux-venn.png)
+
+
+### ***Important Points***
+- If MCV application works fine then there is no need to change to webFlux
