@@ -16,8 +16,25 @@ Spring WebFlux provides a choice of two programming models:
 
 Spring MVC and Spring WebFlux works together to expand the available options. Designed for continuity and consistency with each other. 
 
-![MVC-VS-WebFlux](../images/spring-mvc-and-webflux-venn.png)
+![MVC-VS-WebFlux](../../images/spring-mvc-and-webflux-venn.png)
 
 
 ### ***Important Points***
 - If MCV application works fine then there is no need to change to webFlux
+- Provides a choice of servers (Netty, Tomcat, Jetty, Undertow, and Servlet containers), a choice of programming models (annotated controllers and functional web endpoints), and a choice of reactive libraries (Reactor, RxJava, or other).
+- If use persistence APIs ( JPA, JDBC) or networking APIs then Spring MVC is the best choice. 
+- If we need to make remote service call then better to use reactive webClint. 
+
+### Servers
+Spring WebFlux is supported on Tomcat, Jetty, Servlet containers, non-Servlet container like Netty and Undertow. 
+
+Spring WebFlux does not have build in support doe starting or stopping a server. 
+
+	It is strongly advised not to map Servlet filters or directly manipulate the Servlet API in the context of a WebFlux application. For the reasons listed above, mixing blocking I/O and non-blocking I/O in the same context will cause runtime issues.
+
+### Concurrency Model
+Both The Spring MVC and Spring WebFlux supports @Controllers but the main difference is the concurrency of model and the default assumptions dor blocking and threads.
+
+In Spring MVC, It is assumed that thee applications can block the current thread. Fot this reason servlet containers have great thread pool to absorb potential  blocking on request handling.
+
+In Spring WebFlux its assumed that applications do not block. Therefore, non-
