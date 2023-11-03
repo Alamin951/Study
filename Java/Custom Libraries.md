@@ -13,8 +13,8 @@ Class that implement auto-configuration are annotated with ***@AutoConfigure***.
 
 ### Locating Auto-configuration Candidate
 Spring Boot checks for the presence of a *META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports* file within the published jar.
-
-    Auto-configurations must be loaded only by being named in the imports file. Make sure that they are defined in a specific package space and that they are never the target of component scanning. Furthermore, auto-configuration classes should not enable component scanning to find additional components. Specific @Import annotations should be used instead.
+> **NOTE** 
+> Auto-configurations must be loaded only by being named in the imports file. Make sure that they are defined in a specific package space and that they are never the target of component scanning. Furthermore, auto-configuration classes should not enable component scanning to find additional components. Specific @Import annotations should be used instead.
 
 We can use *before*, *beforeName*, *after* and *afterName* attributes on the @AutoConfiguration to specify the order.
 
