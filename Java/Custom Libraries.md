@@ -1,4 +1,36 @@
 # Spring Boot Custom Library
+
+## Creating Own Auto-configuration
+If we want to build a shared library or a open-source or commercial library then we may consider building our own auto-configuration. Auto-configuration classes can be bundled in external jars and still be picked up by Spring Boot.
+
+Auto-configuration is associated to a ***"starter"*** that provides the auto-configuration code as well as the typical libraries that you would use with it. 
+
+### Auto-Configured Beans
+
+Class that implement auto-configuration are annotated with ***@AutoConfigure***. This is a meta annotation with ***@Configuration*** . We can also use **@Conditional** annotation to constrain when the auto-configuration will be applied. It use @ConditionalOnClass and @ConditionalOnMissingBean annotation to ensure functionality applies when then relevant classes are found and when not declared own ***@Configuration***.
+
+[Reference-Git-Link](https://github.com/spring-projects/spring-boot/tree/v3.1.5/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/amqp)
+
+### Locating Auto-configuration Candidate
+Spring Boot checks for the presence of a *META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports* file within the published jar.
+
+    Auto-configurations must be loaded only by being named in the imports file. Make sure that they are defined in a specific package space and that they are never the target of component scanning. Furthermore, auto-configuration classes should not enable component scanning to find additional components. Specific @Import annotations should be used instead.
+
+We can use *before*, *beforeName*, *after* and *afterName* attributes on the @AutoConfiguration to specify the order.
+
+### Conditional Annotations
+we can add ***@Conditional*** annotations on auto-configuration class. 
+
+@Conditional annotation includes:
+- Class Condition
+- Bean Conditions
+- Property Conditions
+- Resource Conditions
+- Web Application Conditions
+- SpEL Expression Conditions
+
+
+## Creating Own Starter
 A Custom starter can contain:
 - The ***autoconfigure*** module that contains the auto-configure code.
 - the ***starter*** module that provides a dependency to the ***autoconfigure*** module and any additional dependencies that are typically useful. In a nutshell adding the starter should provide everything needed to start using that library.
