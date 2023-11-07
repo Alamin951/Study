@@ -22,7 +22,7 @@ API, business logic, persistence layer, automated tests and other logic takes pl
 #### Declaring the modules
 For Gradle to recognize the modular structure, all modules have to be declared within the settings.gradle file at the root of your project. Hierarchy levels can be defined with the colon (:) symbol. For example, module:pet:api corresponds with module/pet/api as folder structure.
 
-Gradle analyses the structure and recognises modules with matching folders, containing a build.gradle. For the example Modulith above, the settings.gradle looks like the following:
+Gradle analyses the structure and recognizes modules with matching folders, containing a build.gradle. For the example Modulith above, the settings.gradle looks like the following:
 ~~~
 rootProject.name = 'modulith'
 include 'modules:a:a-api', 'modules:a:a-impl'
