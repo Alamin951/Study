@@ -98,6 +98,11 @@ The ***UserDetailsService*** bean sets up an in-memory user store with a single 
 
 
 
+## Authorisation in Spring Security
+Spring Security defines the notion of a principal which is currently logged in user. After user's successful authentication, the principal is stored in Spring's security context. It is thread-bound. This makes it available to the rest of service. 
+*Security context does not propagate by default in child threads.*
+
+In order to provide authorisation functionality, Spring Security uses the ***AccessDecisionManager*** , which is responsible for delegating authorisation decisions to one or more ***AccessDecisionVoter*** instances.
 
 
 
