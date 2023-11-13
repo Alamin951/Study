@@ -38,3 +38,24 @@ Both The Spring MVC and Spring WebFlux supports @Controllers but the main differ
 In Spring MVC, It is assumed that thee applications can block the current thread. Fot this reason servlet containers have great thread pool to absorb potential  blocking on request handling.
 
 In Spring WebFlux its assumed that applications do not block. Therefore, non-
+
+> **Note**
+> “To scale” and “small number of threads” may sound contradictory, but to never block the current thread (and rely on callbacks instead) means that you do not need extra threads, as there are no blocking calls to absorb.
+
+### Invoking a Blocking API
+Blocking APIs are not a good fit for this concurrency model.
+
+### Mutable state
+In Reactor or RxJava we declare a login through operator. At runtime Reactive pipeline is formed and where data is processed sequentially and in distinct stage.
+
+### Threading Model
+- On a "vanilla" Spring WebFlux server, One thread for the server and other threads are for processing. 
+- The Reactive WebClint operates in event loop style. Therefor Small number of processing thread.
+- Refactor and RxJava provide thread pool abstractions, called schedular, to use with the publishOn operator that is used to switch processing to a different thread pool. 
+- Data access library and other third-party dependencies can use their own thread pool. 
+
+
+### Configure 
+Spring Framework does not support for starting and stopping servers. 
+
+## Reactive Core
