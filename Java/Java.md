@@ -225,13 +225,17 @@ LinkedList is a generic class that has this declaration:
 
 - The API documentation explicitly states that Identity HashMap is not for general use.
 	
-##£ HashMap & HashTable 
+### HashMap & HashTable
+
 
 **HashMap is preferred when we have more number of search operation.**
 
 - underlying data structure is hashTable
 - insertion order is not preserved.
 - duplicate key are not allowed but duplicate values are allowed
+- HashMap uses its static inner class ***Node<K,V>*** for storing the entries in the map.
+- Does not preserve the insertion order.
+- 
 
 This allows the execution time of get( ) and put( )
 While both classes use keys to look up values, there are some important differences, including:

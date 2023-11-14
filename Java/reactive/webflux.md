@@ -59,3 +59,9 @@ In Reactor or RxJava we declare a login through operator. At runtime Reactive pi
 Spring Framework does not support for starting and stopping servers. 
 
 ## Reactive Core
+- For server request processing there are 2 levels of support
+	1. **HttpHandler:** Basic contract for HTTP request handling with non-blocking I/O and Reactive Streams back pressure, along with adapters for Reactor Netty, Undertow, Tomcat, Jetty and any Servlet container.
+
+	2. **WebHandler API:** General purpose web API for request handling, on top of which concrete programming models such as annotated controllers and functional endpoints are build.
+- For clint side, *ClintHttpConnector* contract to perform HTTP requests with non-blocking I/O and Reactive Streams back pressure, along with adapters for Reactor Netty, reactive Jetty HttpClint and Apache HttpComponents. The higher level WebClint used in applications build on this basic contract.
+
