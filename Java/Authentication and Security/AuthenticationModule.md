@@ -114,3 +114,88 @@ In order to provide authorisation functionality, Spring Security uses the ***Acc
 - org.springframework.security.provisioning
 
 
+
+## Java Configuration
+### Hello Web Security Java Configuration
+The First step is to create a Spring Security Java Configuration. 
+THe configuration creates a servlet Filter Known as the ***SpringSecurityFilterChain***, which is responsible for all the security of the application. 
+
+~~~
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
+
+	@Bean
+	public UserDetailsService userDetailsService() {
+		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+		manager.createUser(User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build());
+		return manager;
+	}
+}
+~~~
+
+This configuration is not complex or extensive, but it does a lot:
+
+- Require authentication to every URL in your application
+
+- Generate a login form for you
+
+- Let the user with a Username of user and a Password of password authenticate with form based authentication
+
+- Let the user logout
+
+- CSRF attack prevention
+
+- Session Fixation protection
+
+- Security Header integration:
+
+	- HTTP Strict Transport Security for secure requests
+
+	- X-Content-Type-Options integration
+
+	- Cache Control (which you can override later in your application to allow caching of your static resources)
+
+	- X-XSS-Protection integration
+
+	- X-Frame-Options integration to help prevent Clickjacking
+
+- Integration with the following Servlet API methods:
+
+	- HttpServletRequest#getRemoteUser()
+
+	- HttpServletRequest#getUserPrincipal()
+
+	- HttpServletRequest#isUserInRole(java.lang.String)
+
+	- HttpServletRequest#login(java.lang.String, java.lang.String)
+
+	- HttpServletRequest#logout()
+
+### AbstractSecurityWebApplicationInitializer
+Next step is to register the ***springSecurityFilterChain*** with the war file.
+We can do so in Java configuration with Spring’s *WebApplicationInitializer* support in a Servlet 3.0+ environment. Not surprisingly, Spring Security provides a base class (*AbstractSecurityWebApplicationInitializer*) to ensure that the springSecurityFilterChain gets registered for you. The way in which we use *AbstractSecurityWebApplicationInitializer* differs depending on if we are already using Spring or if Spring Security is the only Spring component in our application.
+
+
+
+### HttpSecurity
+
+~~~
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	http
+		.authorizeRequests(authorize -> authorize
+			.anyRequest().authenticated()
+		)
+		.formLogin(withDefaults())
+		.httpBasic(withDefaults());
+	return http.build();
+}
+~~~
+
+This default configuration consists:
+- Ensures that any request requires the user to be authenticated
+- authenticate with form based login
+- Let user authenticate with HTTP Basic authentication
+
+
