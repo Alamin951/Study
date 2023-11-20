@@ -12,4 +12,6 @@ A refresh token is a special key that enables a clint for an API or service to r
 - Embrace HTTPS
 - Store and reuse
 
+ - Refresh token automatic Reuse detection
  
+
