@@ -198,4 +198,161 @@ This default configuration consists:
 - authenticate with form based login
 - Let user authenticate with HTTP Basic authentication
 
+## Servlet Authentication Architecture
 
+**Servlet Security:** The Big Picture to describe the main architectural components of Spring Security’s used in Servlet authentication.
+
+**SecurityContextHolder** - The SecurityContextHolder is where Spring Security stores the details of who is authenticated.
+
+**SecurityContext** - is obtained from the SecurityContextHolder and contains the Authentication of the currently authenticated user.
+
+**Authentication** - Can be the input to AuthenticationManager to provide the credentials a user has provided to authenticate or the current user from the SecurityContext.
+
+**GrantedAuthority** - An authority that is granted to the principal on the Authentication (i.e. roles, scopes, etc.)
+
+**AuthenticationManager** - the API that defines how Spring Security’s Filters perform authentication.
+
+**ProviderManager** - the most common implementation of AuthenticationManager.
+
+**AuthenticationProvider** - used by ProviderManager to perform a specific type of authentication.
+
+**Request Credentials with AuthenticationEntryPoint** - used for requesting credentials from a client (i.e. redirecting to a log in page, sending a WWW-Authenticate response, etc.)
+
+**AbstractAuthenticationProcessingFilter** - a base Filter used for authentication. This also gives a good idea of the high level flow of authentication and how pieces work together.
+
+### SecurityContextHolder
+It is the heart of the spring security's authentication model. It contains:
+![SecurityContextHolder](../../images/securitycontextholder.png)
+
+Here the Spring Security stores the details of the user who is authenticated. Spring Security does not care how the SecurityContextHolder is populated. If it contains a value, it is used as the currently authenticated user.
+
+~~~
+SecurityContext context = SecurityContextHolder.createEmptyContext(); 
+Authentication authentication =
+    new TestingAuthenticationToken("username", "password", "ROLE_USER"); 
+context.setAuthentication(authentication);
+
+SecurityContextHolder.setContext(context); 
+~~~
+
+To obtain information about the authenticated principal, access the SecurityContextHolder.
+
+***Currently Authenticated UserInformation***
+
+~~~
+SecurityContext context = SecurityContextHolder.getContext();
+Authentication authentication = context.getAuthentication();
+String username = authentication.getName();
+Object principal = authentication.getPrincipal();
+Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+~~~
+
+by default the security context holder is ThreadLocal to store the details. It's always available to the methods in same thread. **Spring Security's ***FilterChainProxy*** ensures that the SecurityContext is always created.**
+
+### SecurityContext
+The SecurityContext is obtained from the [SecurityContextHolder](#securitycontextholder). The SecurityContext contains an [Authentication](#authentication) object. 
+
+### Authentication
+Authentication Interface serves 2 main purpose within Spring Security.
+- An input to [AuthenticationManager](#authenticationmanager) to provide the credentials a user has provided to authenticate
+- Represent the currently authenticated user. we can also current authentication from [SecurityContext](#securitycontext).
+
+**Authentication Contains:**
+- **principal:** Identifies the user. When authenticating with a username/password this is ofter an instance of UserDetails.
+- **credentials:** Ofter a password. In many cases, this is cleared after the user is authenticated to ensure that it is not leaked.
+- **authorities:** The GrantedAuthority instances are high-level permissions the user is granted. Like: roles and scope.
+
+
+### GrantedAuthority
+GrantedAuthority instances are high-level permissions that the user is granted. Two examples are roles and scopes.
+
+GrantedAuthority objects are application-wide permissions. They are not specific to a given domain object. 
+
+### AuthenticationManager
+AuthenticationManager is the API that defines how Spring Security Filters perform [Authentication](#authentication). The Authentication that is returned is then set on the SecurityContextHolder by the controller that invokes the AuthenticationManager. If we are not integrating with Spring Security;s Filters instances, we can set the [SecurityContextHolder](#securitycontextholder) directly and are not required to use an AuthenticationManager.
+
+
+### ProviderManager
+ProviderManager is the most commonly used implementation of AuthenticationManager. ProviderManager delegates to a list of AuthenticationProvider instances. 
+
+
+![Provider Manager](../../images/providermanager.png)
+Each AuthenticationProvider knows how to perform a specific type of authentication. We can perform different type of Authentication by only exposing a  single AuthenticationManager bean.
+
+ProviderManager also allows configuring an optional parent AuthenticationManager, which is consulted in the event that no AuthenticationProvider can perform authentication. The parent can be any type of AuthenticationManager, but it is often an instance of ProviderManager.
+![ProviderManager](../../images/providermanager-parent.png)
+
+Multiple ProviderManager instances might share the same parent AuthenticationManager. This is somewhat common in scenarios where there are multiple SecurityFilterChain instances that have some authentication in common (the shared parent AuthenticationManager), but also different authentication mechanisms (the different ProviderManager instances).
+
+![ProviderManager](../../images/providermanagers-parent-multiple.png)
+
+By default, ProviderManager tries to clear any sensitive credentials information from the Authentication object that is returned by a successful authentication request. This prevents information, such as passwords, being retained longer than necessary in the HttpSession.
+
+### AuthenticationProvider
+In a Provider Manager we can add multiple AuthenticationProvider's instances. For Example: 
+
+### RequestCredentials with AuthenticationEntryPoint
+***AuthenticationEntryPoint*** is used to send an HTTP response that requests credentials from a clint. If user provides credentials then we don't need to provide HTTP response to collect user information. 
+
+If user or clint makes an unauthenticated request that is not authorized then we can implements *AuthenticationEntryPoint* to request credentials from clint. 
+
+
+### AbstractAuthenticationProcessingFilter
+AbstractAuthenticationProcessingFilter is used as a base Filter for authenticating a user's credentials. Before the credentials can be authenticated, Spring Security typically requests the credentials by using *AuthenticationEntryPoint*.
+
+![AbstractAuthenticationProcessingFilter](../../images/abstractauthenticationprocessingfilter.png)
+
+1. When the user submits their credentials, the AbstractAuthenticationProcessingFilter creates an Authentication from the HttpServletRequest to be authenticated. The type of Authentication created depends on the subclass of AbstractAuthenticationProcessingFilter. For example, UsernamePasswordAuthenticationFilter creates a UsernamePasswordAuthenticationToken from a username and password that are submitted in the HttpServletRequest.
+
+2. Authentication is passed into the [AuthenticationManager](#authenticationmanager) to be authenticated.
+
+3. If Authentication failed
+	- [SecurityContextHolder](#securitycontextholder) is cleared out.
+	- RememberMeService.loginFain is invoked.
+	- AuthenticationFailureHandler is invoked.
+
+4. If SuccessfulAuthentication
+	- SessionAuthenticationStrategy is notified of a new login.
+	- Authentication is set on the [SecurityContextHolder](#securitycontextholder) 
+	- RememberMeService.loginSuccess in invoked.
+	- ApplicationEventPublisher publishes an *InteractiveAuthenticationSuccessEvent*.
+	- AuthenticationSuccessHandler is invoked.
+
+
+## Username/Password Authentication
+Spring Security provides comprehensive support for authenticating with a username and password.
+
+~~~
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+			.authorizeHttpRequests((authorize) -> authorize
+				.anyRequest().authenticated()
+			)
+			.httpBasic(Customizer.withDefaults())
+			.formLogin(Customizer.withDefaults());
+
+		return http.build();
+	}
+
+	@Bean
+	public UserDetailsService userDetailsService() {
+		UserDetails userDetails = User.withDefaultPasswordEncoder()
+			.username("user")
+			.password("password")
+			.roles("USER")
+			.build();
+
+		return new InMemoryUserDetailsManager(userDetails);
+	}
+
+}
+~~~
+
+#### Publish an AuthenticationManager bean
+#### Customize the AuthenticationManager
+#### 
