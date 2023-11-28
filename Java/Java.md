@@ -393,7 +393,7 @@ StringBuffer is a peer class of String that provides much of the functionality o
 String represents fixed-length, immutable character sequences but StringBuffer represents growable and writable characters sequences. 
 
 ### StringBuilder
-Same as StringBuffer butOne major difference is that it's not synchronized means it's not thread safe. Th
+Same as StringBuffer butOne major difference is that it's not synchronized means it's not thread safe. 
 
 ### When a primitive type is passed to a method, it is done by use of call-by-value. Objects are implicitly passed by use of call-by-reference.
 
