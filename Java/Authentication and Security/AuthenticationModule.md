@@ -81,6 +81,26 @@ public class WebSecurityConfig {
 		return new InMemoryUserDetailsManager(user);
 	}
 }
+
+
+// For more higher level UserDetails Bean without role
+/**
+     * User details bean to get the user information form DB
+     * Sets the activeFlag to Enable and Set the deleteFlag to accountNonExpired
+     *
+     * @return User
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+                User user = userRepository.findByEmail(email);
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.isActiveFlag(), !user.isDeleteFlag(), true, true, authorities);
+            }
+        };
+    }
 ~~~
 
 The ***WebSecurityConfig*** class is annotated with ***@EnableWebSecurity*** to enable Spring Security’s web security support and provide the Spring MVC integration. It also exposes two beans to set some specifics for the web security configuration:
